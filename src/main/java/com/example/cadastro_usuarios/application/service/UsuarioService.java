@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.cadastro_usuarios.domain.exception.UsuarioNaoEncontradoException;
 import com.example.cadastro_usuarios.domain.model.Usuario;
 import com.example.cadastro_usuarios.infrastructure.persistence.UsuarioRepository;
 
@@ -34,7 +35,12 @@ public class UsuarioService {
     }
 
     public void deletarUsuario(Long id) {
-        usuarioRepository.deleteById(id);
+        Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
+        if (usuarioOptional.isPresent()) {
+            usuarioRepository.delete(usuarioOptional.get());
+        } else {
+            throw new UsuarioNaoEncontradoException("Usuário não encontrado com ID: " + id);
+        }
     }
 
     // Métodos para autenticação e geração de JWT podem ser adicionados aqui
